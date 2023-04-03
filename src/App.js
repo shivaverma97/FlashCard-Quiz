@@ -6,6 +6,7 @@ function App() {
   
   const [categories, setCategories] = useState([''])
   const [flashCards, setFlashCards] = useState([])
+  const [loading, setLoading] = useState(false)
 
   const categoryRef = useRef()
   const amountRef = useRef()
@@ -18,6 +19,8 @@ function App() {
 
   function handleSubmit(e) {
     e.preventDefault()
+    setFlashCards([])
+    setLoading(true)
     axios.get("https://opentdb.com/api.php", {
       params: {
         amount: amountRef.current.value,
@@ -25,19 +28,20 @@ function App() {
       }
     }).then(res => {
       setFlashCards((res.data.results.map((questionItem, index) => {
+
         const answer = questionItem.correct_answer
         const options = [
-
-          ...questionItem.incorrect_answer.map(a => decodeString(a)), answer
+          ...questionItem.incorrect_answers.map(a => decodeString(a)), answer
         ]
 
         return {
           id: `${index}-${Date.now()}`,
-          question: questionItem.question,
+          question: decodeString(questionItem.question),
           answer: answer,
           options: options.sort(() => Math.random() - .5) // generating a key to sort array
         }
       })))
+      setLoading(false)
     })
   }
 
@@ -52,7 +56,7 @@ function App() {
           <div>
             <label htmlFor="category">Choose category:</label>
             <select name="category" id="category" ref={categoryRef}>
-              {categories.map((category) => {
+              {categories && categories.map((category) => {
                 return <option key= {category.id} value={category.id}>{category.name}</option>
               })}
             </select>
@@ -63,8 +67,8 @@ function App() {
           </div>
           <button type='submit'>Generate</button>
         </div>
-        <FlashCardList questions={flashCards} />
       </form>
+      {flashCards.length === 0 && loading ? ( <div>Loading...</div>) : (<FlashCardList questions={flashCards} />)}
     </>
   );
 }

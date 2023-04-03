@@ -12,7 +12,7 @@ export default function FlashCard(props) {
   }
 
   return (
-    <div className='card' key={question.id} onClick={handleFlip}>
+    <div className='card' onClick={handleFlip}>
       {flip && <div className='card-answer'>{question.answer}</div>}
       {
         !flip && <><div className='card-question'>{question.question}</div>

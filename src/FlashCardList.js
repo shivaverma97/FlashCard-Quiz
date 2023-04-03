@@ -8,7 +8,7 @@ export default function FlashCardList(props) {
   return (
     <div className='cards'>
       {questions.map((question) =>{
-        return <FlashCard question = {question}/>
+        return <FlashCard question = {question} key={question.id}/>
       })}
     </div>
   )
